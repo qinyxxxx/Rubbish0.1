@@ -8,8 +8,23 @@
     android:orientation="vertical">
         <LinearLayout
             android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/detail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="600px"
+                    android:text="细节" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical">
+
                 <com.amap.api.maps.MapView
                     android:id="@+id/map"
                     android:layout_width="match_parent"
