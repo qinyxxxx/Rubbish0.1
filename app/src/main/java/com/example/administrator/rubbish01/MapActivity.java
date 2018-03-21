@@ -1,10 +1,10 @@
 package com.example.administrator.rubbish01;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -26,15 +26,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MapActivity extends Activity implements AMap.OnMarkerClickListener,View.OnClickListener {
+public class MapActivity extends Activity  {
 
     private MapView mapView;
     private AMap aMap;
 
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
-
-
     /**
      * 声明定位回调监听器
      */
@@ -80,17 +78,24 @@ public class MapActivity extends Activity implements AMap.OnMarkerClickListener,
                         marker.icon(bitmapDescriptor1);
                         marker.title(String.valueOf(i));
                         aMap.addMarker(marker);
+                        AMap.OnMarkerClickListener markerClickListener = new AMap.OnMarkerClickListener() {
+                            @Override
+                            public boolean onMarkerClick(Marker marker) {
+                                Intent intent=null;
+                                if((marker.getPosition().latitude==(lat+0.0001))&&(marker.getPosition().longitude ==(lon-0.0001))){
+                                    intent=new Intent(MapActivity.this,Demo1Activity.class );}
+                                if((marker.getPosition().latitude==(lat+0.0001))&&(marker.getPosition().longitude ==(lon+0.0001))){
+                                    intent=new Intent(MapActivity.this,Demo2Activity.class );}
+                                if((marker.getPosition().latitude==(lat-0.0001))&&(marker.getPosition().longitude ==(lon-0.0001))){
+                                    intent=new Intent(MapActivity.this,Demo3Activity.class );}
+                                if((marker.getPosition().latitude==(lat-0.0001))&&(marker.getPosition().longitude ==(lon+0.0001))){
+                                    intent=new Intent(MapActivity.this,Demo4Activity.class );}
+                                startActivity(intent);
+                                return true;
+                            }
+                        };
+                        aMap.setOnMarkerClickListener(markerClickListener);
                     }
-                    aMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
-                        @Override
-                        public boolean onMarkerClick(final Marker marker) {
-                            //.......................
-                            marker.showInfoWindow();
-                            return true;//false表示marker被点击后显示在屏幕中心,true则不会.
-                        }
-                    }
-                    );
-
 
                     aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 19));
                     MarkerOptions markerOptions = new MarkerOptions();
@@ -101,6 +106,8 @@ public class MapActivity extends Activity implements AMap.OnMarkerClickListener,
                     markerOptions.icon(bitmapDescriptor);
                     aMap.addMarker(markerOptions);
 
+
+
                 } else {
                     //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
                     Log.e("AmapError", "location Error, ErrCode:"
@@ -110,12 +117,10 @@ public class MapActivity extends Activity implements AMap.OnMarkerClickListener,
             }
         }
     };
-
     //声明mLocationOption对象
     public AMapLocationClientOption mLocationOption = null;
     private double lat;
     private double lon;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,6 +128,7 @@ public class MapActivity extends Activity implements AMap.OnMarkerClickListener,
 
         mapView = (MapView) findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);//必须要写
+
         //初始化定位
         mLocationClient = new AMapLocationClient(getApplicationContext());
         //设置定位回调监听
@@ -131,7 +137,6 @@ public class MapActivity extends Activity implements AMap.OnMarkerClickListener,
         init();
 
     }
-
     /**
      * * 初始化AMap对象
      */
@@ -177,7 +182,6 @@ public class MapActivity extends Activity implements AMap.OnMarkerClickListener,
         super.onResume();
         mapView.onResume();
     }
-
     /**
      * 方法必须重写
      */
@@ -212,15 +216,5 @@ public class MapActivity extends Activity implements AMap.OnMarkerClickListener,
         mLocationClient.onDestroy();//销毁定位客户端。
     }
 
-    public void onClick(View v) {
-
-    }
-
-
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-
-        return false;
-    }
 
 }
