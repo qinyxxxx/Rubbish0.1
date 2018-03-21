@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+    <EditText
+        android:id="@+id/laji1"
+        android:layout_width="400dp"
+        android:layout_height="60dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="44dp"
+        android:hint="编号：    002"
+        android:inputType="text|number"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="48dp"/>
+
+    <EditText
+        android:id="@+id/laji2"
+        android:layout_width="400dp"
+        android:layout_height="60dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/laji1"
+        android:layout_marginTop="44dp"
+        android:hint="满溢情况：    50%"
+        android:inputType="textShortMessage"
+        android:singleLine="true"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="146dp"/>
+
+    <EditText
+        android:id="@+id/laji3"
+        android:layout_width="400dp"
+        android:layout_height="60dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/laji2"
+        android:layout_marginTop="44dp"
+        android:hint="距离：    438m"
+        android:inputType="textShortMessage"
+        android:singleLine="true"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="248dp"/>
+
+    <EditText
+        android:id="@+id/laji4"
+        android:layout_width="400dp"
+        android:layout_height="60dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/laji3"
+        android:layout_marginTop="44dp"
+        android:hint="上次清理时间：    2018/02/28"
+        android:inputType="datetime"
+        android:singleLine="true"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="353dp"/>
+    tools:context="com.example.administrator.rubbish01.Demo1Activity">
+</RelativeLayout>
