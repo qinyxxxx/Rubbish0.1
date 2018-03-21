@@ -6,19 +6,7 @@
     android:layout_height="match_parent"
     tools:context="com.example.administrator.rubbish01.MapActivity"
     android:orientation="vertical">
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/detail"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="600px"
-                    android:text="细节" />
-
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -36,13 +24,24 @@
 
                 </com.amap.api.maps.MapView>
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="600px"
+            android:orientation="vertical">
+                <Button
+                    android:id="@+id/other"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="跳转" />
 
+        </LinearLayout>
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:orientation="vertical">
-
                 <Button
                     android:id="@+id/traffic"
                     android:layout_width="wrap_content"
