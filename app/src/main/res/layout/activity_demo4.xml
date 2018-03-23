@@ -62,7 +62,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="4"
-            android:text="编号："
+            android:text="@string/rubbish_id"
             android:scaleType="centerInside"
             android:textSize="20dp" />
 
@@ -95,7 +95,7 @@
             android:layout_height="match_parent"
             android:layout_weight="4"
             android:scaleType="centerInside"
-            android:text="满溢情况："
+            android:text="@string/full_percent"
             android:textSize="20dp"/>
 
         <FrameLayout
@@ -127,7 +127,7 @@
             android:layout_height="match_parent"
             android:layout_weight="4"
             android:scaleType="centerInside"
-            android:text="距离："
+            android:text="@string/distance"
             android:textSize="20dp"/>
 
         <FrameLayout
@@ -160,7 +160,7 @@
             android:layout_height="match_parent"
             android:layout_weight="4"
             android:scaleType="centerInside"
-            android:text="上次清理时间:"
+            android:text="@string/last_clean_time"
             android:textSize="20dp"/>
 
         <FrameLayout

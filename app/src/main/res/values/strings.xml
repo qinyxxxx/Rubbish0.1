@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">Rubbish0.1</string>
+    <string name="app_name">今天也是很丧的还没写完的垃圾桶</string>
+    <string name="rubbish_id">编号:</string>
+    <string name="full_percent">满溢情况:</string>
+    <string name="distance">距离:</string>
+    <string name="last_clean_time">上次清理时间:</string>
+    <string name="clean_route">清理路线</string>
 </resources>
