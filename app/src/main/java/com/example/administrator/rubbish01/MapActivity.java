@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -33,6 +36,7 @@ public class MapActivity extends Activity  {
 
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
+    public ImageButton refreash;
     /**
      * 声明定位回调监听器
      */
@@ -125,7 +129,7 @@ public class MapActivity extends Activity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-
+        refreash =(ImageButton) findViewById(R.id.fresh);
         mapView = (MapView) findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);//必须要写
 
@@ -134,6 +138,13 @@ public class MapActivity extends Activity  {
         //设置定位回调监听
         mLocationClient.setLocationListener(mLocationListener);
 
+        refreash.setOnClickListener(new ImageButton.OnClickListener(){
+            public void onClick(View v){
+                Toast.makeText(MapActivity.this,"b1要执行的动作",Toast.LENGTH_LONG).show();
+                Intent intent2=new Intent(MapActivity.this,NewMapActivity.class);
+                startActivity(intent2);
+            }
+        });
         init();
 
     }

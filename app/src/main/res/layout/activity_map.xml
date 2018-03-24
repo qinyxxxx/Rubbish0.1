@@ -28,14 +28,13 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="600px"
+            android:layout_marginLeft="640px"
             android:orientation="vertical">
-                <Button
-                    android:id="@+id/other"
+                <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="跳转" />
-
+                    android:src="@drawable/fresh"
+                    android:id = "@+id/fresh"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="fill_parent"
@@ -50,5 +49,6 @@
                     android:text="跳转" />
 
         </LinearLayout>
+
 </RelativeLayout>
 
