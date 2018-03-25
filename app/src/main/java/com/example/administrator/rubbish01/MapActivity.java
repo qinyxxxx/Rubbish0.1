@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -14,8 +15,6 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
-
-
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.BitmapDescriptor;
@@ -36,7 +35,11 @@ public class MapActivity extends Activity  {
 
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
-    public ImageButton refreash;
+    public ImageButton refresh;
+
+    //用于调试
+    private Button qyx;
+
     /**
      * 声明定位回调监听器
      */
@@ -106,7 +109,7 @@ public class MapActivity extends Activity  {
                     markerOptions.position(new LatLng(lat, lon));
                     markerOptions.title("当前位置");
                     markerOptions.visible(true);
-                    BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.location_maker));
+                    BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.pin));
                     markerOptions.icon(bitmapDescriptor);
                     aMap.addMarker(markerOptions);
 
@@ -129,7 +132,7 @@ public class MapActivity extends Activity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        refreash =(ImageButton) findViewById(R.id.fresh);
+        refresh =(ImageButton) findViewById(R.id.fresh);
         mapView = (MapView) findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);//必须要写
 
@@ -138,13 +141,24 @@ public class MapActivity extends Activity  {
         //设置定位回调监听
         mLocationClient.setLocationListener(mLocationListener);
 
-        refreash.setOnClickListener(new ImageButton.OnClickListener(){
+        refresh.setOnClickListener(new ImageButton.OnClickListener(){
             public void onClick(View v){
                 Toast.makeText(MapActivity.this,"b1要执行的动作",Toast.LENGTH_LONG).show();
                 Intent intent2=new Intent(MapActivity.this,NewMapActivity.class);
                 startActivity(intent2);
             }
         });
+
+        //调试 不要管
+        qyx = (Button) findViewById(R.id.qyx);
+        qyx.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MapActivity.this, Demo4Activity.class);
+                startActivity(intent);
+            }
+        });
+
         init();
 
     }

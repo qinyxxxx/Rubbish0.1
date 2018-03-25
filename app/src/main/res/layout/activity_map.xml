@@ -7,7 +7,6 @@
     tools:context="com.example.administrator.rubbish01.MapActivity"
     android:orientation="vertical">
 
-
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -30,11 +29,18 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="640px"
             android:orientation="vertical">
+
                 <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/fresh"
                     android:id = "@+id/fresh"/>
+                <!--调试！-->
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/qyx"
+                    android:text="qyx's test"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="fill_parent"
@@ -45,8 +51,8 @@
                     android:id="@+id/traffic"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="300px"
-                    android:text="跳转" />
+                    android:layout_marginLeft="150dp"
+                    android:text="垃圾垃圾垃圾" />
 
         </LinearLayout>
 
