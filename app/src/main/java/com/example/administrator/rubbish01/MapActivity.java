@@ -22,6 +22,7 @@ import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps.model.PolylineOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -81,7 +82,7 @@ public class MapActivity extends Activity  {
                         MarkerOptions marker =new MarkerOptions();
                         marker.position(list.get(i));
                         marker.visible(true);
-                        BitmapDescriptor bitmapDescriptor1 = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.trash));
+                        BitmapDescriptor bitmapDescriptor1 = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.pin3));
                         marker.icon(bitmapDescriptor1);
                         marker.title(String.valueOf(i));
                         aMap.addMarker(marker);
@@ -112,9 +113,16 @@ public class MapActivity extends Activity  {
                     BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.pin));
                     markerOptions.icon(bitmapDescriptor);
                     aMap.addMarker(markerOptions);
-
-
-
+                    PolylineOptions polylineOptions = new PolylineOptions();
+                    polylineOptions.add(new LatLng(lat,lon));
+                    polylineOptions.add(new LatLng(lat-0.0001, lon-0.0001));
+                    polylineOptions.add(new LatLng(lat-0.0001, lon+0.0001));
+                    polylineOptions.add(new LatLng(lat+0.0001, lon-0.0001));
+                    polylineOptions.add(new LatLng(lat+0.0001, lon+0.0001));
+                    polylineOptions.width(8);
+                    polylineOptions.color(R.color.darkGreen);
+                    polylineOptions.geodesic(true);
+                    aMap.addPolyline(polylineOptions);
                 } else {
                     //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
                     Log.e("AmapError", "location Error, ErrCode:"

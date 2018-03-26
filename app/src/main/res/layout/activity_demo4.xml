@@ -11,27 +11,19 @@
         android:layout_height="370dp"
         android:orientation="vertical">
 
-
-
         <ImageView
+            android:id="@+id/rubbishBin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:src="@drawable/mid"
-            android:layout_gravity="center"
-            android:id="@+id/rubbishBin"/>
-
-        <ImageView
-            android:id="@+id/color_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
             android:layout_marginTop="30dp"
-            android:gravity="bottom"
-            android:src="@drawable/colorbar"
-            android:adjustViewBounds="false"/>
+            android:layout_gravity="center" />
 
-
+        <ImageView
+            android:id="@+id/progressbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="30dp" />
 
     </LinearLayout>
 
@@ -40,7 +32,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         android:layout_weight="10"
         android:weightSum="10"
         android:orientation="horizontal"
@@ -52,10 +44,10 @@
             android:orientation="vertical" >
 
             <TextView
+            android:id="@+id/RBid"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:gravity="center"
-            android:text="5"
             android:textSize="35dp" />
 
             <TextView
@@ -73,10 +65,10 @@
             android:orientation="vertical" >
 
             <TextView
+                android:id="@+id/RBdistance"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:gravity="center"
-                android:text="50"
                 android:textSize="35dp" />
 
             <TextView
@@ -94,10 +86,10 @@
             android:orientation="vertical" >
 
             <TextView
+                android:id="@+id/RBtime"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:gravity="center"
-                android:text="2"
                 android:textSize="35dp" />
 
             <TextView
