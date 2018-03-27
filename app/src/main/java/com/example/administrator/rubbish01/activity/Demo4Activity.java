@@ -29,8 +29,6 @@ public class Demo4Activity extends AppCompatActivity {
 
         float tmp = 67f;
         setRBstatus(tmp);
-
-
     }
 
     protected void setRBstatus(float tmp) {

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">么么哒</string>
+    <string name="app_name">休想停止运行</string>
     <string name="rubbish_id">编号</string>
     <string name="full_percent">满溢情况:</string>
     <string name="distance">距离(m)</string>
@@ -8,4 +8,48 @@
     <string name="estimated_time">预计时间(min)</string>
     <string name="rubbishbin_status">状态</string>
     <string name="no_result">对不起，没有搜索到相关数据！</string>
+    <string name="route_drive">汽车</string>
+    <string name="blank"></string>
+
+    <string-array name="layers_array">
+        <item>@string/normal</item>
+        <item>@string/satellite</item>
+        <item>@string/night_mode</item>
+        <item>@string/navi_mode</item>
+    </string-array>
+
+    <string name="no_demos">No demos</string>
+    <string name="normal">Normal</string>
+    <string name="night_mode">Night</string>
+    <string name="navi_mode">Navi</string>
+    <string name="satellite">Satellite</string>
+
+    <!-- offlinemap -->
+    <string name="beijing">"北京"</string>
+    <string name="start">"开始"</string>
+    <string name="pause">"暂停"</string>
+    <string name="stop">"停止"</string>
+    <string name="remove">"删除"</string>
+    <string name="update">"更新"</string>
+
+    <string name="error_network">搜索失败,请检查网络连接！</string>
+    <string name="error_key">key验证无效！</string>
+    <string name="error_other">未知错误，请稍后重试!错误码为</string>
+    <string name="province">省</string>
+    <string name="city">市</string>
+    <string name="district">区/县</string>
+    <string name="all_offline">所有城市</string>
+    <string name="city_name">城市名称</string>
+    <string name="city_size">城市大小</string>
+    <string name="download_progress">0%</string>
+    <string name="my_city">当前城市</string>
+    <string name="sso_complete">完成</string>
+
+    <string name="route_demo">Route路径规划</string>
+    <string name="route_description">介绍如何在地图中绘制Route</string>
+    <string name="search_route">出行路线规划</string>
+    <string name="route_bus">公交</string>
+    <string name="route_walk">步行</string>
+    <string name="route_ride">骑行</string>
+    <string name="busstation_demo">公交站点查询</string>
 </resources>

@@ -44,6 +44,18 @@
         <activity android:name=".activity.Demo3Activity" />
         <activity android:name=".activity.Demo4Activity" />
         <activity android:name=".activity.NewMapActivity" />
+        <activity
+            android:name=".activity.DriveRouteDetailActivity"
+            android:label="@string/route_demo"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.DriveRouteActivity"
+            android:label="@string/route_drive"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.RouteActivity"
+            android:label="@string/route_demo"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
