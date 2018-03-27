@@ -32,18 +32,18 @@
         <!-- 定位需要的服务 -->
         <service android:name="com.amap.api.location.APSService" />
 
-        <activity android:name=".MapActivity">
+        <activity android:name=".activity.MapActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Demo1Activity" />
-        <activity android:name=".Demo2Activity" />
-        <activity android:name=".Demo3Activity" />
-        <activity android:name=".Demo4Activity" />
-        <activity android:name=".NewMapActivity" />
+        <activity android:name=".activity.Demo1Activity" />
+        <activity android:name=".activity.Demo2Activity" />
+        <activity android:name=".activity.Demo3Activity" />
+        <activity android:name=".activity.Demo4Activity" />
+        <activity android:name=".activity.NewMapActivity" />
     </application>
 
 </manifest>

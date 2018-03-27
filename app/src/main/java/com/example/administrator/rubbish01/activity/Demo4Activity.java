@@ -1,10 +1,11 @@
-package com.example.administrator.rubbish01;
+package com.example.administrator.rubbish01.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.administrator.rubbish01.R;
 
 
 public class Demo4Activity extends AppCompatActivity {

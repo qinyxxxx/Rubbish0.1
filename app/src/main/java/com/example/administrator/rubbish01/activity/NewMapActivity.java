@@ -1,4 +1,4 @@
-package com.example.administrator.rubbish01;
+package com.example.administrator.rubbish01.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -21,6 +21,7 @@ import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
+import com.example.administrator.rubbish01.R;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -81,8 +82,8 @@ public class NewMapActivity extends Activity {
                         MarkerOptions maker2 = new MarkerOptions();
                         marker.position(list.get(i));
                         marker.visible(true);
-                        BitmapDescriptor bitmapDescriptor1 = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.trash2));
-                        BitmapDescriptor bitmapDescriptor2 = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.trash));
+                        BitmapDescriptor bitmapDescriptor1 = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.empty_icon));
+                        BitmapDescriptor bitmapDescriptor2 = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.full_icon));
                         marker.icon(bitmapDescriptor1);
                         maker2.icon(bitmapDescriptor2);
                         marker.title(String.valueOf(i));

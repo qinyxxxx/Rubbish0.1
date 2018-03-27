@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.administrator.rubbish01.MapActivity"
+    tools:context="com.example.administrator.rubbish01.activity.MapActivity"
     android:orientation="vertical">
 
         <LinearLayout
@@ -21,29 +21,45 @@
                     android:layout_alignParentTop="true"
                     android:clickable="true">
                 </com.amap.api.maps.MapView>
+
+                <TextView
+                    android:id="@+id/location_errInfo_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|left"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@color/red"
+                    android:textColor="@color/darkgrey"
+                    android:text="TextView"
+                    android:visibility="gone"/>
+
         </LinearLayout>
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="640px"
-            android:orientation="vertical">
 
+            android:orientation="vertical">
                 <ImageButton
                     android:layout_marginTop="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:background="@drawable/refresh"
                     android:id = "@+id/fresh"/>
+
+                <Button
+                    android:id="@+id/qyx"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginTop="450dp"
+                    android:text="qyx's test" />
                 <!--调试！-->
 
+
         </LinearLayout>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/qyx"
-            android:text="qyx's test"/>
 
         <LinearLayout
             android:layout_width="fill_parent"
