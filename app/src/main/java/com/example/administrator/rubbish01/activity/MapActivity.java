@@ -2,8 +2,6 @@ package com.example.administrator.rubbish01.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
@@ -12,7 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
@@ -28,41 +25,74 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
-import com.amap.api.maps.model.PolylineOptions;
 import com.example.administrator.rubbish01.R;
+import com.example.administrator.rubbish01.util.HttpUtil;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
 public class MapActivity extends Activity implements AMap.OnMyLocationChangeListener
 {
+    private double lat;
+    private double lon;
+
     //private Context mContext;
     private MapView mapView;
     private AMap aMap;
 
-    private Spinner spinnerGps;
+ //   private Spinner spinnerGps;
 //    private RouteSearch mRouteSearch;
 
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
     private ImageButton refresh;
-//    private Button route_button;
-//
+    private Button route_button;
     private MyLocationStyle myLocationStyle;
-//
-//    private DriveRouteResult mDriveRouteResult;
-//    private ProgressDialog progDialog = null;// 搜索时进度条
-//
-//    private LatLonPoint mStartPoint = null;
-//    private LatLonPoint mEndPoint = null;
-//
-//    private TextView mRotueTimeDes, mRouteDetailDes;
 
-    //用于调试
-    private Button qyx;
-    private DatabaseHelper db=null;
+    private static class DemoDetails {
+        private final int titleId;
+        private final int descriptionId;
+        private final Class<? extends android.app.Activity> activityClass;
+
+        public DemoDetails(int titleId, int descriptionId,
+                           Class<? extends android.app.Activity> activityClass) {
+            super();
+            this.titleId = titleId;
+            this.descriptionId = descriptionId;
+            this.activityClass = activityClass;
+        }
+    }
+
+//    private static class CustomArrayAdapter extends ArrayAdapter<DemoDetails> {
+//        public CustomArrayAdapter(Context context, DemoDetails[] demos) {
+//            super(context, R.layout.feature, R.id.title, demos);
+//        }
+//
+//        @Override
+//        public View getView(int position, View convertView, ViewGroup parent) {
+//            FeatureView featureView;
+//            if (convertView instanceof FeatureView) {
+//                featureView = (FeatureView) convertView;
+//            } else {
+//                featureView = new FeatureView(getContext());
+//            }
+//            DemoDetails demo = getItem(position);
+//            featureView.setTitleId(demo.titleId, demo.activityClass!=null);
+//            return featureView;
+//        }
+//    }
+
 
     /**
      * 声明定位回调监听器
@@ -93,8 +123,6 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
                     lat = amapLocation.getLatitude();
                     lon = amapLocation.getLongitude();
                     LatLng current_location = new LatLng(lat,lon);
-//                    mStartPoint.setLatitude(lat);
-//                    mStartPoint.setLongitude(lon);
                     Log.v("pcw", "lat : " + lat + " lon : " + lon);
                     Log.v("pcw", "Country : " + amapLocation.getCountry() + " province : " + amapLocation.getProvince() + " City : " + amapLocation.getCity() + " District : " + amapLocation.getDistrict());
 
@@ -104,45 +132,34 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
                     final LatLng latlon_three = new LatLng(31.2281570000,121.4099300000); //正门
                     final LatLng latlon_four = new LatLng(31.2218700000,121.4030900000); //设计学院
 
-//                    mEndPoint.setLongitude(latlon_four.longitude);
-//                    mEndPoint.setLatitude(latlon_four.latitude);
                     // 设置当前地图显示为当前位置
                     List<LatLng> list = new ArrayList<LatLng>();
-                    Cursor cursor = db.getReadableDatabase().query("rubbish1",null,null,null,null,null,null);
-                    //调用moveToFirst()将数据指针移动到第一行的位置。
-                    if (cursor.moveToFirst()) {
-                        do {
-                            //然后通过Cursor的getColumnIndex()获取某一列中所对应的位置的索引
-                            float latitude=cursor.getFloat(cursor.getColumnIndex("latitude"));
-                            float longitude=cursor.getFloat(cursor.getColumnIndex("longitude"));
-                            list.add(new LatLng(latitude, longitude));
-                        } while (cursor.moveToNext());
-                    }
-                    cursor.close();
-                   // list.add(latlon_one);
-                    //list.add(latlon_two);
-                    //list.add(latlon_three);
-                    //list.add(latlon_four);
+                    list.add(latlon_one);
+                    list.add(latlon_two);
+                    list.add(latlon_three);
+                    list.add(latlon_four);
                     for(int i=0;i<list.size();i++) {
                         MarkerOptions marker =new MarkerOptions();
                         marker.position(list.get(i));
                         marker.visible(true);
-                        BitmapDescriptor bitmapDescriptor1 = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.full_icon));
+                        float tmp_full_percent = 50.5f;
+                        BitmapDescriptor bitmapDescriptor1 = null;
+                        if(tmp_full_percent>0.0f && tmp_full_percent<70.0f)
+                            bitmapDescriptor1 = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.empty_icon));
+                        else
+                            bitmapDescriptor1 = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.full_icon));
+
                         marker.icon(bitmapDescriptor1);
                         marker.title(String.valueOf(i));
                         aMap.addMarker(marker);
                         AMap.OnMarkerClickListener markerClickListener = new AMap.OnMarkerClickListener() {
                             @Override
                             public boolean onMarkerClick(Marker marker) {
-                                Intent intent=null;
-                                if((marker.getPosition().equals(latlon_one))){
-                                    intent=new Intent(MapActivity.this,Demo1Activity.class );}
-                                if((marker.getPosition().equals(latlon_two))){
-                                    intent=new Intent(MapActivity.this,Demo2Activity.class );}
-                                if((marker.getPosition().equals(latlon_three))){
-                                    intent=new Intent(MapActivity.this,Demo3Activity.class );}
-                                if((marker.getPosition().equals(latlon_four))){
-                                    intent=new Intent(MapActivity.this,Demo4Activity.class );}
+                                Intent intent = null;
+//                                if((marker.getPosition().equals(latlon_one))){
+//                                    intent=new Intent(MapActivity.this,Demo1Activity.class );}
+//                                else{
+                                intent=new Intent(MapActivity.this,Demo4Activity.class );
                                 startActivity(intent);
                                 return true;
                             }
@@ -157,17 +174,17 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
                     markerOptions.visible(true);
                     BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.location_maker));
                     markerOptions.icon(bitmapDescriptor);
-                    aMap.addMarker(markerOptions);
-                    PolylineOptions polylineOptions = new PolylineOptions();
-                    polylineOptions.add(current_location);
-                    polylineOptions.add(latlon_one);
-                    polylineOptions.add(latlon_two);
-                    polylineOptions.add(latlon_three);
-                    polylineOptions.add(latlon_four);
-                    polylineOptions.width(8);
-                    polylineOptions.color(R.color.darkGreen);
-                    polylineOptions.geodesic(true);
-                    aMap.addPolyline(polylineOptions);
+//                    aMap.addMarker(markerOptions);
+//                    PolylineOptions polylineOptions = new PolylineOptions();
+//                    polylineOptions.add(current_location);
+//                    polylineOptions.add(latlon_one);
+//                    polylineOptions.add(latlon_two);
+//                    polylineOptions.add(latlon_three);
+//                    polylineOptions.add(latlon_four);
+//                    polylineOptions.width(8);
+//                    polylineOptions.color(R.color.darkGreen);
+//                    polylineOptions.geodesic(true);
+//                    aMap.addPolyline(polylineOptions);
                 } else {
                     //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
                     Log.e("AmapError", "location Error, ErrCode:"
@@ -179,15 +196,15 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
     };
     //声明mLocationOption对象
     public AMapLocationClientOption mLocationOption = null;
-    private double lat;
-    private double lon;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        db=new DatabaseHelper(this);
         //mContext = this.getApplicationContext();
         refresh =(ImageButton) findViewById(R.id.fresh);
+        route_button = (Button)findViewById(R.id.route_button);
         mapView = (MapView) findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);//必须要写
 
@@ -204,29 +221,23 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
             }
         });
 
-        //调试 不要管
-        qyx = (Button) findViewById(R.id.qyx);
-        qyx.setOnClickListener(new View.OnClickListener() {
+        route_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MapActivity.this, Demo4Activity.class);
-                startActivity(intent);
+                DemoDetails demo = new DemoDetails(R.string.route_drive, R.string.blank, DriveRouteActivity.class);
+                if (demo.activityClass != null) {
+                    Log.i("MY","demo!=null");
+                    startActivity(new Intent(MapActivity.this,
+                            demo.activityClass));
+                }
             }
         });
 
         init();
-
-        //setfromandtoMarker();
+        getLocationFromCloud();//test by cp
+        getUsageFromCloud();
     }
 
-//    private void setfromandtoMarker() {
-//        aMap.addMarker(new MarkerOptions()
-//                .position(AMapUtil.convertToLatLng(mStartPoint))
-//                .icon(BitmapDescriptorFactory.fromResource(R.drawable.location_icon)));
-//        aMap.addMarker(new MarkerOptions()
-//                .position(AMapUtil.convertToLatLng(mEndPoint))
-//                .icon(BitmapDescriptorFactory.fromResource(R.drawable.full_icon)));
-//    }
     /**
      * * 初始化AMap对象
      */
@@ -236,7 +247,6 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
         }
 
         setUpMap();
- //       mRouteSearch = new RouteSearch(this);
         //设置SDK 自带定位消息监听
         aMap.setOnMyLocationChangeListener(this);
     }
@@ -274,92 +284,6 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
         aMap.getUiSettings().setMyLocationButtonEnabled(true);// 设置默认定位按钮是否显示
         aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
     }
-
-//    public void onDriveClick(View view) {
-//        searchRouteResult(RouteSearch.DrivingDefault);
-//        mapView.setVisibility(View.VISIBLE);
-//    }
-//
-//    public void searchRouteResult(int mode) {
-//        showProgressDialog();
-//        final RouteSearch.FromAndTo fromAndTo = new RouteSearch.FromAndTo(
-//                mStartPoint, mEndPoint);
-//
-//        DriveRouteQuery query = new DriveRouteQuery(fromAndTo, mode, null,
-//                    null, "");// 第一个参数表示路径规划的起点和终点，第二个参数表示驾车模式，第三个参数表示途经点，第四个参数表示避让区域，第五个参数表示避让道路
-//            mRouteSearch.calculateDriveRouteAsyn(query);// 异步路径规划驾车模式查询
-//    }
-//
-//    public void onDriveRouteSearched(DriveRouteResult result, int errorCode) {
-//        dissmissProgressDialog();
-//        aMap.clear();// 清理地图上的所有覆盖物
-//        if (errorCode == AMapException.CODE_AMAP_SUCCESS) {
-//            if (result != null && result.getPaths() != null) {
-//                if (result.getPaths().size() > 0) {
-//                    mDriveRouteResult = result;
-//                    final DrivePath drivePath = mDriveRouteResult.getPaths()
-//                            .get(0);
-//                    DrivingRouteOverlay drivingRouteOverlay = new DrivingRouteOverlay(
-//                            mContext, aMap, drivePath,
-//                            mDriveRouteResult.getStartPos(),
-//                            mDriveRouteResult.getTargetPos(), null);
-//                    drivingRouteOverlay.setNodeIconVisibility(true);//设置节点marker是否显示
-//                    drivingRouteOverlay.setIsColorfulline(false);//是否用颜色展示交通拥堵情况，默认true
-//                    drivingRouteOverlay.removeFromMap();
-//                    drivingRouteOverlay.addToMap();
-//                    drivingRouteOverlay.zoomToSpan();
-//                    int dis = (int) drivePath.getDistance();
-//                    int dur = (int) drivePath.getDuration();
-//                    String des = AMapUtil.getFriendlyTime(dur)+"("+AMapUtil.getFriendlyLength(dis)+")";
-//                    mRotueTimeDes.setText(des);
-//                    mRouteDetailDes.setVisibility(View.VISIBLE);
-//                    int taxiCost = (int) mDriveRouteResult.getTaxiCost();
-//                    mRouteDetailDes.setText("打车约"+taxiCost+"元");
-//
-////                    route_button.setOnClickListener(new View.OnClickListener() {
-////                        @Override
-////                        public void onClick(View v) {
-////                            Intent intent = new Intent(mContext,
-////                                    DriveRouteDetailActivity.class);
-////                            intent.putExtra("drive_path", drivePath);
-////                            intent.putExtra("drive_result",
-////                                    mDriveRouteResult);
-////                            startActivity(intent);
-////                        }
-////                    });
-//                } else if (result != null && result.getPaths() == null) {
-//                    ToastUtil.show(mContext, R.string.no_result);
-//                }
-//
-//            } else {
-//                ToastUtil.show(mContext, R.string.no_result);
-//            }
-//        } else {
-//            ToastUtil.showerror(this.getApplicationContext(), errorCode);
-//        }
-//    }
-//
-//    /**
-//     * 显示进度框
-//     */
-//    private void showProgressDialog() {
-//        if (progDialog == null)
-//            progDialog = new ProgressDialog(this);
-//        progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//        progDialog.setIndeterminate(false);
-//        progDialog.setCancelable(true);
-//        progDialog.setMessage("正在搜索");
-//        progDialog.show();
-//    }
-//
-//    /**
-//     * 隐藏进度框
-//     */
-//    private void dissmissProgressDialog() {
-//        if (progDialog != null) {
-//            progDialog.dismiss();
-//        }
-//    }
 
     /**
      * 方法必须重写
@@ -427,4 +351,102 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
             Log.e("amap", "定位失败");
         }
     }
+
+    public void getLocationFromCloud()     //测试请求
+    {
+        Log.d( "attempAddFriends:---", "begin");
+
+        String url = "http://115.159.59.29/microduino/getLocation.php";  //此处更换服务器地址
+        //String cookie = pref.getString("cookie", null);
+        //Log.d( "refreshMain: ", cookie+"bc");
+        final JSONObject jsonObject=new JSONObject();
+        try {
+            jsonObject.put("id",1);
+            //jsonObject.put("teamId",teamId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String param=jsonObject.toString();
+        HttpUtil.getUtilsInstance().doPost(url, null,param, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("TaskRefresh", "onFailure: noresponse");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                String responseText = response.body().string();
+//                try {
+//                    JSONObject jsonObject1 = new JSONObject(responseText);
+//                    String lon = jsonObject1.getString("lon");
+//                    Log.d("return_lon",lon);
+//                    Log.d("getTaskLocation", responseText);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+
+                Log.d("getLocationresponse", responseText);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "领取成功", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
+                response.body().close();
+            }
+
+        });
+    }
+    public void getUsageFromCloud()     //测试请求
+    {
+        Log.d( "attempAddFriends:---", "begin");
+
+        String url = "http://115.159.59.29/microduino/getUsage.php";  //此处更换服务器地址
+        //String cookie = pref.getString("cookie", null);
+        //Log.d( "refreshMain: ", cookie+"bc");
+        final JSONObject jsonObject=new JSONObject();
+        try {
+            jsonObject.put("id",1);
+            //jsonObject.put("teamId",teamId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String param=jsonObject.toString();
+        HttpUtil.getUtilsInstance().doPost(url, null,param, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("TaskRefresh", "onFailure: noresponse");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                String responseText = response.body().string();
+//                try {
+//                    JSONObject jsonObject1 = new JSONObject(responseText);
+//                    String lon = jsonObject1.getString("lon");
+//                    Log.d("return_lon",lon);
+//                    Log.d("getTaskLocation", responseText);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+
+                Log.d("getUsageresponse", responseText);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "领取成功", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
+                response.body().close();
+            }
+
+        });
+    }
+
 }
