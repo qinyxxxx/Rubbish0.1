@@ -55,8 +55,6 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
     private String ip = "115.159.59.29";
     private double lat;
     private double lon;
-    private double lat1;
-    private double lon1;
     //private Context mContext;
     private MapView mapView;
     private AMap aMap;
@@ -142,8 +140,7 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
 
                     // 设置当前地图显示为当前位置
                     List<LatLng> list = new ArrayList<LatLng>();
-                    //Log.d("呼呼呼客户看看",String.valueOf(lat1));
-                    Cursor cursor = db.getReadableDatabase().query("rubbish",null,null,null,null,null,null);
+                    Cursor cursor = db.getReadableDatabase().query("rubbish1",null,null,null,null,null,null);
                     //调用moveToFirst()将数据指针移动到第一行的位置。
                     if (cursor.moveToFirst()) {
                         do {
@@ -163,9 +160,9 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
                         marker.position(list.get(i));
                         marker.visible(true);
                         BitmapDescriptor bitmapDescriptor1 = null;
-                        double lat1=list.get(i).longitude;
+                        double lat1=list.get(i).latitude;
                         Log.d("和客户开发货款",String.valueOf(lat1));
-                        Cursor cursor1 = db.getReadableDatabase().rawQuery("select usage from rubbish where latitude=?",new String[]{String.valueOf(lat1)}) ;
+                        Cursor cursor1 = db.getReadableDatabase().rawQuery("select usage from rubbish1 where latitude=?",new String[]{String.valueOf(lat1)}) ;
                         if (cursor1.moveToFirst()) {
                             do {
                                 float tmp_full_percent=cursor1.getFloat(cursor1.getColumnIndex("usage")) ;
@@ -173,7 +170,6 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
                                     bitmapDescriptor1 = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.empty_icon));}
                                 else{
                                     bitmapDescriptor1 = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.full_icon));}
-                                //}
                             } while (cursor1.moveToNext());
                         }
                         cursor1.close();
@@ -413,9 +409,9 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
                         JSONObject jb=json.getJSONObject(i);
                         Double lon=jb.getDouble("lon");
                         Log.d("还是贷款还款",String.valueOf(lon)) ;
-                        lon1=lon;
+
                         Double lat=jb.getDouble("lati");
-                        lat1=lat;
+
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

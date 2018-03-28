@@ -17,13 +17,14 @@ public class Demo4Activity extends AppCompatActivity {
         setContentView(R.layout.activity_demo4);
 
         DatabaseHelper db = new DatabaseHelper(this);
-        Cursor cursor = db.getReadableDatabase().query("rubbish", null, null, null, null, null, null);
+        Cursor cursor = db.getReadableDatabase().query("rubbish1", null, null, null, null, null, null);
         //调用moveToFirst()将数据指针移动到第一行的位置。
         if (cursor.moveToFirst()) {
             do {
                 //然后通过Cursor的getColumnIndex()获取某一列中所对应的位置的索引
                 int id = cursor.getInt(cursor.getColumnIndex("id"));
                 double distance = cursor.getDouble(cursor.getColumnIndex("distance"));
+                float tmp = cursor.getFloat(cursor.getColumnIndex("usage"));
                 String time = cursor.getString(cursor.getColumnIndex("time"));
                 TextView id1 = findViewById(R.id.RBid);
                 TextView distance1 = findViewById(R.id.RBdistance);
@@ -31,10 +32,9 @@ public class Demo4Activity extends AppCompatActivity {
                 id1.setText(String.format(String.valueOf(id)));
                 distance1.setText(String.format(String.valueOf(distance)+"m"));
                 time1.setText(String.format(time));
+                setRBstatus(tmp);
             }while(cursor.moveToNext());
         }
-        float tmp = 67f;
-        setRBstatus(tmp);
     }
 
     protected void setRBstatus(float tmp) {
