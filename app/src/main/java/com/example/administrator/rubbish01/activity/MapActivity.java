@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
@@ -24,7 +25,6 @@ import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
-import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
@@ -48,21 +48,19 @@ import java.util.Locale;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
-import com.example.administrator.rubbish01.util.HttpUtil;
-
-import static com.amap.api.mapcore.util.dh.v;
 
 public class MapActivity extends Activity implements AMap.OnMyLocationChangeListener
 {
 
-    private String ip = "127.0.0.1";
+    private String ip = "115.159.59.29";
     private double lat;
     private double lon;
-
+    private double lat1;
+    private double lon1;
     //private Context mContext;
     private MapView mapView;
     private AMap aMap;
-
+    private DatabaseHelper db=null;
  //   private Spinner spinnerGps;
 //    private RouteSearch mRouteSearch;
 
@@ -71,8 +69,6 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
     private ImageButton refresh;
     private Button route_button;
     private MyLocationStyle myLocationStyle;
-    private boolean followMove=true;
-
     private static class DemoDetails {
         private final int titleId;
         private final int descriptionId;
@@ -139,7 +135,6 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
                     Log.v("pcw", "lat : " + lat + " lon : " + lon);
                     Log.v("pcw", "Country : " + amapLocation.getCountry() + " province : " + amapLocation.getProvince() + " City : " + amapLocation.getCity() + " District : " + amapLocation.getDistrict());
 
-
                     final LatLng latlon_one = new LatLng(31.2297000000,121.4058700000);// 图书馆
                     final LatLng latlon_two = new LatLng(31.2255500000,121.4049600000); //物理楼
                     final LatLng latlon_three = new LatLng(31.2281570000,121.4099300000); //正门
@@ -147,21 +142,41 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
 
                     // 设置当前地图显示为当前位置
                     List<LatLng> list = new ArrayList<LatLng>();
-                    list.add(latlon_one);
-                    list.add(latlon_two);
-                    list.add(latlon_three);
-                    list.add(latlon_four);
+                    //Log.d("呼呼呼客户看看",String.valueOf(lat1));
+                    Cursor cursor = db.getReadableDatabase().query("rubbish",null,null,null,null,null,null);
+                    //调用moveToFirst()将数据指针移动到第一行的位置。
+                    if (cursor.moveToFirst()) {
+                        do {
+                            //然后通过Cursor的getColumnIndex()获取某一列中所对应的位置的索引
+                            double latitude=cursor.getDouble(cursor.getColumnIndex("latitude"));
+                            double longitude=cursor.getDouble(cursor.getColumnIndex("longitude"));
+                            list.add(new LatLng(latitude, longitude));
+                        } while (cursor.moveToNext());
+                    }
+                    cursor.close();
+                    //list.add(latlon_one);
+                    //list.add(latlon_two);
+                    //list.add(latlon_three);
+                    //list.add(latlon_four);
                     for(int i=0;i<list.size();i++) {
                         MarkerOptions marker =new MarkerOptions();
                         marker.position(list.get(i));
                         marker.visible(true);
-                        float tmp_full_percent = 50.5f;
                         BitmapDescriptor bitmapDescriptor1 = null;
-                        if(tmp_full_percent>0.0f && tmp_full_percent<70.0f)
-                            bitmapDescriptor1 = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.empty_icon));
-                        else
-                            bitmapDescriptor1 = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.full_icon));
-
+                        double lat1=list.get(i).longitude;
+                        Log.d("和客户开发货款",String.valueOf(lat1));
+                        Cursor cursor1 = db.getReadableDatabase().rawQuery("select usage from rubbish where latitude=?",new String[]{String.valueOf(lat1)}) ;
+                        if (cursor1.moveToFirst()) {
+                            do {
+                                float tmp_full_percent=cursor1.getFloat(cursor1.getColumnIndex("usage")) ;
+                                if(tmp_full_percent>0.0f && tmp_full_percent<70.0f){
+                                    bitmapDescriptor1 = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.empty_icon));}
+                                else{
+                                    bitmapDescriptor1 = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.full_icon));}
+                                //}
+                            } while (cursor1.moveToNext());
+                        }
+                        cursor1.close();
                         marker.icon(bitmapDescriptor1);
                         marker.title(String.valueOf(i));
                         aMap.addMarker(marker);
@@ -179,7 +194,7 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
                         };
                         aMap.setOnMarkerClickListener(markerClickListener);
                     }
-                    //aMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude()), 16, 0, 0)));
+
                     aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, 14));
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(current_location);
@@ -215,6 +230,7 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        db=new DatabaseHelper(this);
         //mContext = this.getApplicationContext();
         refresh =(ImageButton) findViewById(R.id.fresh);
         route_button = (Button)findViewById(R.id.route_button);
@@ -227,8 +243,10 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
         mLocationClient.setLocationListener(mLocationListener);
 
         refresh.setOnClickListener(new ImageButton.OnClickListener(){
+            @Override
             public void onClick(View v){
-                //Toast.makeText(MapActivity.this,"b1要执行的动作",Toast.LENGTH_LONG).show();
+
+                Toast.makeText(MapActivity.this,"b1要执行的动作",Toast.LENGTH_LONG).show();
                 Intent intent2=new Intent(MapActivity.this,NewMapActivity.class);
                 startActivity(intent2);
             }
@@ -247,17 +265,13 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
         });
 
         init();
-
-        new Thread(new Runnable() {
+        /*new Thread(new Runnable() {
             @Override
             public void run() {
-                getLocationFromCloud();//test by cp
-                getUsageFromCloud();
-                getAllId();
-                //Log.d("SHA", sHA1(getApplicationContext()));
-            }
-        }).start();
+                getUsageFromCloud(1);
 
+            }
+        }).start();*/
     }
 
     /**
@@ -272,6 +286,7 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
         //设置SDK 自带定位消息监听
         aMap.setOnMyLocationChangeListener(this);
     }
+
     /**
      * 配置定位参数
      */
@@ -283,13 +298,13 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
         //设置是否返回地址信息（默认返回地址信息）
         mLocationOption.setNeedAddress(true);
         //设置是否只定位一次,默认为false
-        mLocationOption.setOnceLocation(true);
+        mLocationOption.setOnceLocation(false);
         //设置是否强制刷新WIFI，默认为强制刷新
         mLocationOption.setWifiActiveScan(true);
         //设置是否允许模拟位置,默认为false，不允许模拟位置
         mLocationOption.setMockEnable(false);
         //设置定位间隔,单位毫秒,默认为2000ms
-        //mLocationOption.setInterval(2000);
+        mLocationOption.setInterval(2000);
         //给定位客户端对象设置定位参数
         mLocationClient.setLocationOption(mLocationOption);
         //启动定位
@@ -299,9 +314,9 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
         //myLocationStyle.strokeWidth(0f);
         myLocationStyle.radiusFillColor(Color.argb(0, 0, 0, 0));
         myLocationStyle.strokeColor(Color.argb(0, 0, 0, 0));
-        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_SHOW);
         // 定位、且将视角移动到地图中心点，定位点依照设备方向旋转，  并且会跟随设备移动。
         aMap.setMyLocationStyle(myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE));
+
         aMap.getUiSettings().setMyLocationButtonEnabled(true);// 设置默认定位按钮是否显示
         aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
     }
@@ -373,17 +388,12 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
         }
     }
 
-    public void getLocationFromCloud()     //测试请求
+    public void getLocationFromCloud(int id)     //测试请求
     {
-        Log.d( "attempAddFriends:---", "begin");
-
         String url = "http://"+ip+"/microduino/getLocation.php";  //此处更换服务器地址
-        //String cookie = pref.getString("cookie", null);
-        //Log.d( "refreshMain: ", cookie+"bc");
         final JSONObject jsonObject=new JSONObject();
         try {
-            jsonObject.put("id",1);
-            //jsonObject.put("teamId",teamId);
+            jsonObject.put("id",id);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -393,29 +403,29 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
             public void onFailure(Call call, IOException e) {
                 Log.d("TaskRefresh", "onFailure: noresponse");
             }
-
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-
                 String responseText = response.body().string();
-//                try {
-//                    JSONObject jsonObject1 = new JSONObject(responseText);
-//                    String lon = jsonObject1.getString("lon");
-//                    Log.d("return_lon",lon);
-//                    Log.d("getTaskLocation", responseText);
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-
+                try {
+                    JSONArray json = new JSONArray(responseText);
+                    for(int i=0;i<json.length();i++)
+                    {
+                        JSONObject jb=json.getJSONObject(i);
+                        Double lon=jb.getDouble("lon");
+                        Log.d("还是贷款还款",String.valueOf(lon)) ;
+                        lon1=lon;
+                        Double lat=jb.getDouble("lati");
+                        lat1=lat;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 Log.d("getLocationresponse", responseText);
-
-
                 response.body().close();
             }
-
         });
     }
-    public void getUsageFromCloud()     //测试请求
+    public void getUsageFromCloud(int id)     //测试请求
     {
         Log.d( "attempAddFriends:---", "begin");
 
@@ -424,7 +434,7 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
         //Log.d( "refreshMain: ", cookie+"bc");
         final JSONObject jsonObject=new JSONObject();
         try {
-            jsonObject.put("id",1);
+            jsonObject.put("id",id);
             //jsonObject.put("teamId",teamId);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -440,14 +450,17 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
             public void onResponse(Call call, Response response) throws IOException {
 
                 String responseText = response.body().string();
-//                try {
-//                    JSONObject jsonObject1 = new JSONObject(responseText);
-//                    String lon = jsonObject1.getString("lon");
-//                    Log.d("return_lon",lon);
-//                    Log.d("getTaskLocation", responseText);
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    JSONArray json = new JSONArray(responseText);
+                    for(int i=0;i<json.length();i++)
+                    {
+                        JSONObject jb=json.getJSONObject(i);
+                        int usage=jb.getInt("usage");
+                    }
+                    Log.d("getTaskLocation", responseText);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
                 Log.d("getUsageresponse", responseText);
 
@@ -461,28 +474,29 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
     public void getAllId()     //测试请求
      {
         Log.d( "attempgetall", "begin");
-
         String url = "http://"+ip+"/microduino/getAll.php";  //此处更换服务器地址
-
         final JSONObject jsonObject=new JSONObject();
-
         String param=jsonObject.toString();
         HttpUtil.getUtilsInstance().doPost(url, null,param, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.d("TaskRefresh", "onFailure: noresponse");
             }
-
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-
                 String responseText = response.body().string();
-
+                try {
+                    JSONArray json = new JSONArray(responseText);
+                    for (int i = 0; i < json.length(); i++) {
+                        JSONObject jb = json.getJSONObject(i);
+                        int id = jb.getInt("id");
+                    }
+                } catch (JSONException e) {
+//                    e.printStackTrace();
+                }
                 Log.d("getUsageresponse", responseText);
-
                 response.body().close();
             }
-
         });
     }
 
