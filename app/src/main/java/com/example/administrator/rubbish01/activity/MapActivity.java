@@ -26,11 +26,21 @@ import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.example.administrator.rubbish01.R;
+import com.example.administrator.rubbish01.util.HttpUtil;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class MapActivity extends Activity implements AMap.OnMyLocationChangeListener
 {
@@ -224,6 +234,8 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
         });
 
         init();
+        getLocationFromCloud();//test by cp
+        getUsageFromCloud();
     }
 
     /**
@@ -339,4 +351,102 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
             Log.e("amap", "定位失败");
         }
     }
+
+    public void getLocationFromCloud()     //测试请求
+    {
+        Log.d( "attempAddFriends:---", "begin");
+
+        String url = "http://115.159.59.29/microduino/getLocation.php";  //此处更换服务器地址
+        //String cookie = pref.getString("cookie", null);
+        //Log.d( "refreshMain: ", cookie+"bc");
+        final JSONObject jsonObject=new JSONObject();
+        try {
+            jsonObject.put("id",1);
+            //jsonObject.put("teamId",teamId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String param=jsonObject.toString();
+        HttpUtil.getUtilsInstance().doPost(url, null,param, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("TaskRefresh", "onFailure: noresponse");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                String responseText = response.body().string();
+//                try {
+//                    JSONObject jsonObject1 = new JSONObject(responseText);
+//                    String lon = jsonObject1.getString("lon");
+//                    Log.d("return_lon",lon);
+//                    Log.d("getTaskLocation", responseText);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+
+                Log.d("getLocationresponse", responseText);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "领取成功", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
+                response.body().close();
+            }
+
+        });
+    }
+    public void getUsageFromCloud()     //测试请求
+    {
+        Log.d( "attempAddFriends:---", "begin");
+
+        String url = "http://115.159.59.29/microduino/getUsage.php";  //此处更换服务器地址
+        //String cookie = pref.getString("cookie", null);
+        //Log.d( "refreshMain: ", cookie+"bc");
+        final JSONObject jsonObject=new JSONObject();
+        try {
+            jsonObject.put("id",1);
+            //jsonObject.put("teamId",teamId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String param=jsonObject.toString();
+        HttpUtil.getUtilsInstance().doPost(url, null,param, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("TaskRefresh", "onFailure: noresponse");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                String responseText = response.body().string();
+//                try {
+//                    JSONObject jsonObject1 = new JSONObject(responseText);
+//                    String lon = jsonObject1.getString("lon");
+//                    Log.d("return_lon",lon);
+//                    Log.d("getTaskLocation", responseText);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+
+                Log.d("getUsageresponse", responseText);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "领取成功", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
+                response.body().close();
+            }
+
+        });
+    }
+
 }
