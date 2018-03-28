@@ -147,7 +147,7 @@ public class NewMapActivity extends Activity {
 
         refreash.setOnClickListener(new ImageButton.OnClickListener(){
             public void onClick(View v){
-                Toast.makeText(NewMapActivity.this,"b1要执行的动作",Toast.LENGTH_LONG).show();
+                //Toast.makeText(NewMapActivity.this,"b1要执行的动作",Toast.LENGTH_LONG).show();
             }
         });
         init();
@@ -176,13 +176,13 @@ public class NewMapActivity extends Activity {
         //设置是否返回地址信息（默认返回地址信息）
         mLocationOption.setNeedAddress(true);
         //设置是否只定位一次,默认为false
-        mLocationOption.setOnceLocation(false);
+        mLocationOption.setOnceLocation(true);
         //设置是否强制刷新WIFI，默认为强制刷新
         mLocationOption.setWifiActiveScan(true);
         //设置是否允许模拟位置,默认为false，不允许模拟位置
         mLocationOption.setMockEnable(false);
         //设置定位间隔,单位毫秒,默认为2000ms
-        mLocationOption.setInterval(2000);
+       // mLocationOption.setInterval(2000);
         //给定位客户端对象设置定位参数
         mLocationClient.setLocationOption(mLocationOption);
         //启动定位

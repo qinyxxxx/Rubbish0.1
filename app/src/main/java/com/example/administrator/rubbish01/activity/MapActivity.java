@@ -24,6 +24,7 @@ import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
@@ -49,6 +50,8 @@ import okhttp3.Callback;
 import okhttp3.Response;
 import com.example.administrator.rubbish01.util.HttpUtil;
 
+import static com.amap.api.mapcore.util.dh.v;
+
 public class MapActivity extends Activity implements AMap.OnMyLocationChangeListener
 {
 
@@ -68,6 +71,7 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
     private ImageButton refresh;
     private Button route_button;
     private MyLocationStyle myLocationStyle;
+    private boolean followMove=true;
 
     private static class DemoDetails {
         private final int titleId;
@@ -175,7 +179,7 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
                         };
                         aMap.setOnMarkerClickListener(markerClickListener);
                     }
-
+                    //aMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude()), 16, 0, 0)));
                     aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, 14));
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(current_location);
@@ -224,7 +228,7 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
 
         refresh.setOnClickListener(new ImageButton.OnClickListener(){
             public void onClick(View v){
-                Toast.makeText(MapActivity.this,"b1要执行的动作",Toast.LENGTH_LONG).show();
+                //Toast.makeText(MapActivity.this,"b1要执行的动作",Toast.LENGTH_LONG).show();
                 Intent intent2=new Intent(MapActivity.this,NewMapActivity.class);
                 startActivity(intent2);
             }
@@ -268,7 +272,6 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
         //设置SDK 自带定位消息监听
         aMap.setOnMyLocationChangeListener(this);
     }
-
     /**
      * 配置定位参数
      */
@@ -280,13 +283,13 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
         //设置是否返回地址信息（默认返回地址信息）
         mLocationOption.setNeedAddress(true);
         //设置是否只定位一次,默认为false
-        mLocationOption.setOnceLocation(false);
+        mLocationOption.setOnceLocation(true);
         //设置是否强制刷新WIFI，默认为强制刷新
         mLocationOption.setWifiActiveScan(true);
         //设置是否允许模拟位置,默认为false，不允许模拟位置
         mLocationOption.setMockEnable(false);
         //设置定位间隔,单位毫秒,默认为2000ms
-        mLocationOption.setInterval(2000);
+        //mLocationOption.setInterval(2000);
         //给定位客户端对象设置定位参数
         mLocationClient.setLocationOption(mLocationOption);
         //启动定位
@@ -296,9 +299,9 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
         //myLocationStyle.strokeWidth(0f);
         myLocationStyle.radiusFillColor(Color.argb(0, 0, 0, 0));
         myLocationStyle.strokeColor(Color.argb(0, 0, 0, 0));
+        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_SHOW);
         // 定位、且将视角移动到地图中心点，定位点依照设备方向旋转，  并且会跟随设备移动。
         aMap.setMyLocationStyle(myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE));
-
         aMap.getUiSettings().setMyLocationButtonEnabled(true);// 设置默认定位按钮是否显示
         aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
     }
