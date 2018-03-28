@@ -1,7 +1,10 @@
 package com.example.administrator.rubbish01.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
@@ -33,17 +36,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+import com.example.administrator.rubbish01.util.HttpUtil;
 
 public class MapActivity extends Activity implements AMap.OnMyLocationChangeListener
 {
+
+    private String ip = "127.0.0.1";
     private double lat;
     private double lon;
 
@@ -234,8 +243,17 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
         });
 
         init();
-        getLocationFromCloud();//test by cp
-        getUsageFromCloud();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getLocationFromCloud();//test by cp
+                getUsageFromCloud();
+                getAllId();
+                //Log.d("SHA", sHA1(getApplicationContext()));
+            }
+        }).start();
+
     }
 
     /**
@@ -356,7 +374,7 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
     {
         Log.d( "attempAddFriends:---", "begin");
 
-        String url = "http://115.159.59.29/microduino/getLocation.php";  //此处更换服务器地址
+        String url = "http://"+ip+"/microduino/getLocation.php";  //此处更换服务器地址
         //String cookie = pref.getString("cookie", null);
         //Log.d( "refreshMain: ", cookie+"bc");
         final JSONObject jsonObject=new JSONObject();
@@ -388,13 +406,7 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
 
                 Log.d("getLocationresponse", responseText);
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), "领取成功", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                });
+
                 response.body().close();
             }
 
@@ -404,7 +416,7 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
     {
         Log.d( "attempAddFriends:---", "begin");
 
-        String url = "http://115.159.59.29/microduino/getUsage.php";  //此处更换服务器地址
+        String url = "http://"+ip+"/microduino/getUsage.php";  //此处更换服务器地址
         //String cookie = pref.getString("cookie", null);
         //Log.d( "refreshMain: ", cookie+"bc");
         final JSONObject jsonObject=new JSONObject();
@@ -436,17 +448,64 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
 
                 Log.d("getUsageresponse", responseText);
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), "领取成功", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                });
+
                 response.body().close();
             }
 
         });
     }
+
+    public void getAllId()     //测试请求
+     {
+        Log.d( "attempgetall", "begin");
+
+        String url = "http://"+ip+"/microduino/getAll.php";  //此处更换服务器地址
+
+        final JSONObject jsonObject=new JSONObject();
+
+        String param=jsonObject.toString();
+        HttpUtil.getUtilsInstance().doPost(url, null,param, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("TaskRefresh", "onFailure: noresponse");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                String responseText = response.body().string();
+
+                Log.d("getUsageresponse", responseText);
+
+                response.body().close();
+            }
+
+        });
+    }
+
+    public static String sHA1(Context context) {
+    try {
+        PackageInfo info = context.getPackageManager().getPackageInfo(
+                context.getPackageName(), PackageManager.GET_SIGNATURES);
+        byte[] cert = info.signatures[0].toByteArray();
+        MessageDigest md = MessageDigest.getInstance("SHA1");
+        byte[] publicKey = md.digest(cert);
+        StringBuffer hexString = new StringBuffer();
+        for (int i = 0; i < publicKey.length; i++) {
+            String appendString = Integer.toHexString(0xFF & publicKey[i]).toUpperCase(Locale.US);
+            if (appendString.length() == 1)
+                hexString.append("0");
+            hexString.append(appendString);
+            hexString.append(":");
+        }
+        String result = hexString.toString();
+        return result.substring(0, result.length()-1);
+    } catch (PackageManager.NameNotFoundException e) {
+        e.printStackTrace();
+    } catch (NoSuchAlgorithmException e) {
+        e.printStackTrace();
+    }
+    return null;
+}
 
 }
