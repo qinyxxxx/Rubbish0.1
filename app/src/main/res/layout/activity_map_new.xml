@@ -45,6 +45,7 @@
                     android:id="@+id/traffic"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/button"
                     android:layout_marginLeft="300px"
                     android:text="跳转" />
 

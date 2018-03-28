@@ -19,8 +19,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
-                    android:clickable="true">
-                </com.amap.api.maps.MapView>
+                    android:clickable="true"></com.amap.api.maps.MapView>
 
                 <TextView
                     android:id="@+id/location_errInfo_text"
@@ -67,6 +66,7 @@
             android:orientation="vertical">
                 <Button
                     android:id="@+id/route_button"
+                    android:background="@drawable/button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
