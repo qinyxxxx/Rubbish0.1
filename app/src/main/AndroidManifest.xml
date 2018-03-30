@@ -39,11 +39,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.Demo1Activity" />
-        <activity android:name=".activity.Demo2Activity" />
-        <activity android:name=".activity.Demo3Activity" />
-        <activity android:name=".activity.Demo4Activity" />
-        <activity android:name=".activity.NewMapActivity" />
+        <activity android:name=".activity.BinDetailActivity" />
         <activity
             android:name=".activity.DriveRouteDetailActivity"
             android:label="@string/route_demo"

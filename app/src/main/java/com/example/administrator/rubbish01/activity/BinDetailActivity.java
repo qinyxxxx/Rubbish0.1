@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.example.administrator.rubbish01.R;
 
 
-public class Demo4Activity extends AppCompatActivity {
+public class BinDetailActivity extends AppCompatActivity {
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {

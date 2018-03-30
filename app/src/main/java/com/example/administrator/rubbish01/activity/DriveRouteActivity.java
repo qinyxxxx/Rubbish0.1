@@ -149,7 +149,7 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 							@Override
 							public boolean onMarkerClick(Marker marker) {
 								Intent intent = null;
-								intent=new Intent(DriveRouteActivity.this,Demo4Activity.class );
+								intent=new Intent(DriveRouteActivity.this,BinDetailActivity.class );
 								startActivity(intent);
 								return true;
 							}
@@ -157,7 +157,7 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 						aMap.setOnMarkerClickListener(markerClickListener);
 					}
 
-					aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, 14));
+					aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, 15));
 					MarkerOptions markerOptions = new MarkerOptions();
 					markerOptions.position(current_location);
 					markerOptions.title("当前位置");

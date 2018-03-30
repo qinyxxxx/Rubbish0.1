@@ -1,11 +1,13 @@
 package com.example.administrator.rubbish01.activity;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
@@ -14,7 +16,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -30,6 +31,7 @@ import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.example.administrator.rubbish01.R;
+import com.example.administrator.rubbish01.bean.Bin;
 import com.example.administrator.rubbish01.util.HttpUtil;
 
 import org.json.JSONArray;
@@ -37,7 +39,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.lang.annotation.Target;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -56,7 +57,7 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
     private String ip = "115.159.59.29";
     private double lat;
     private double lon;
-    //private Context mContext;
+    private Context mContext;
     private MapView mapView;
     private AMap aMap;
     private DatabaseHelper db=null;
@@ -101,6 +102,24 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
 //        }
 //    }
 
+    public List<Bin> getBinList(){
+        List<Bin> list = new ArrayList<Bin>();
+        Cursor cursor = db.getReadableDatabase().query("rubbish1",null,null,null,null,null,null);
+        //调用moveToFirst()将数据指针移动到第一行的位置。
+        if (cursor.moveToFirst()) {
+            do {
+                //然后通过Cursor的getColumnIndex()获取某一列中所对应的位置的索引
+                int id = cursor.getInt(cursor.getColumnIndex("id"));
+                double latitude = cursor.getDouble(cursor.getColumnIndex("latitude"));
+                double longitude = cursor.getDouble(cursor.getColumnIndex("longitude"));
+                float usage = cursor.getFloat(cursor.getColumnIndex("usage"));
+                list.add(new Bin(id,usage,longitude,latitude));
+//                System.out.println("垃圾桶: "+id+" usage:" + usage +" latlot:"+ new LatLng(latitude,longitude));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return list;
+    }
 
     /**
      * 声明定位回调监听器
@@ -134,54 +153,26 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
                     Log.v("pcw", "lat : " + lat + " lon : " + lon);
                     Log.v("pcw", "Country : " + amapLocation.getCountry() + " province : " + amapLocation.getProvince() + " City : " + amapLocation.getCity() + " District : " + amapLocation.getDistrict());
 
-                    final LatLng latlon_one = new LatLng(31.2297000000,121.4058700000);// 图书馆
-                    final LatLng latlon_two = new LatLng(31.2255500000,121.4049600000); //物理楼
-                    final LatLng latlon_three = new LatLng(31.2281570000,121.4099300000); //正门
-                    final LatLng latlon_four = new LatLng(31.2218700000,121.4030900000); //设计学院
+                    List<Bin> list = getBinList();
 
-                    // 设置当前地图显示为当前位置
-                    List<LatLng> list = new ArrayList<LatLng>();
-                    Cursor cursor = db.getReadableDatabase().query("rubbish1",null,null,null,null,null,null);
-                    //调用moveToFirst()将数据指针移动到第一行的位置。
-                    if (cursor.moveToFirst()) {
-                        do {
-                            //然后通过Cursor的getColumnIndex()获取某一列中所对应的位置的索引
-                            double latitude=cursor.getDouble(cursor.getColumnIndex("latitude"));
-                            double longitude=cursor.getDouble(cursor.getColumnIndex("longitude"));
-                            list.add(new LatLng(latitude, longitude));
-                        } while (cursor.moveToNext());
-                    }
-                    cursor.close();
-                    //list.add(latlon_one);
-                    //list.add(latlon_two);
-                    //list.add(latlon_three);
-                    //list.add(latlon_four);
                     for(int i=0;i<list.size();i++) {
                         MarkerOptions marker =new MarkerOptions();
-                        marker.position(list.get(i));
+                        marker.position(new LatLng(list.get(i).getLatitude(),list.get(i).getLongitude()));
                         marker.visible(true);
-                        BitmapDescriptor bitmapDescriptor1 = null;
-                        final double lat1=list.get(i).latitude;
-                        Cursor cursor1 = db.getReadableDatabase().rawQuery("select usage from rubbish1 where latitude=?",new String[]{String.valueOf(lat1)}) ;
-                        if (cursor1.moveToFirst()) {
-                            do {
-                                float tmp_full_percent=cursor1.getFloat(cursor1.getColumnIndex("usage")) ;
-                                if(tmp_full_percent>0.0f && tmp_full_percent<70.0f){
-                                    bitmapDescriptor1 = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.empty_icon));}
-                                else{
-                                    bitmapDescriptor1 = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.full_icon));}
-                            } while (cursor1.moveToNext());
-                        }
-                        cursor1.close();
-                        marker.icon(bitmapDescriptor1);
+                        BitmapDescriptor bitmapDescriptor = null;
+                        float usage = list.get(i).getUsage();
+                        if(usage>0.0f && usage<70.0f){
+                            bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.empty_icon));}
+                        else{
+                            bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.full_icon));}
+                        marker.icon(bitmapDescriptor);
                         marker.title(String.valueOf(i));
-                        Log.d("和客户开发货款",String.valueOf(lat1));
                         aMap.addMarker(marker);
                         AMap.OnMarkerClickListener markerClickListener = new AMap.OnMarkerClickListener() {
                             @Override
                             public boolean onMarkerClick(Marker marker) {
                                 double lat=marker.getPosition().latitude;
-                                Intent intent=new Intent(MapActivity.this,Demo4Activity.class );
+                                Intent intent=new Intent(MapActivity.this,BinDetailActivity.class );
                                 intent.putExtra("data",String.valueOf(lat)) ;
                                 startActivity(intent);
                                 return true;
@@ -190,24 +181,14 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
                         aMap.setOnMarkerClickListener(markerClickListener);
                     }
 
-                    aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, 14));
+                    // 设置当前地图显示为当前位置
+                    aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, 15));
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(current_location);
                     markerOptions.title("当前位置");
                     markerOptions.visible(true);
                     BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.location_maker));
                     markerOptions.icon(bitmapDescriptor);
-//                    aMap.addMarker(markerOptions);
-//                    PolylineOptions polylineOptions = new PolylineOptions();
-//                    polylineOptions.add(current_location);
-//                    polylineOptions.add(latlon_one);
-//                    polylineOptions.add(latlon_two);
-//                    polylineOptions.add(latlon_three);
-//                    polylineOptions.add(latlon_four);
-//                    polylineOptions.width(8);
-//                    polylineOptions.color(R.color.darkGreen);
-//                    polylineOptions.geodesic(true);
-//                    aMap.addPolyline(polylineOptions);
                 } else {
                     //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
                     Log.e("AmapError", "location Error, ErrCode:"
@@ -226,7 +207,7 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         db=new DatabaseHelper(this);
-        //mContext = this.getApplicationContext();
+        mContext = this.getApplicationContext();
         refresh =(ImageButton) findViewById(R.id.fresh);
         route_button = (Button)findViewById(R.id.route_button);
         mapView = (MapView) findViewById(R.id.map);
@@ -240,10 +221,10 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
         refresh.setOnClickListener(new ImageButton.OnClickListener(){
             @Override
             public void onClick(View v){
-
-                Toast.makeText(MapActivity.this,"b1要执行的动作",Toast.LENGTH_LONG).show();
-                Intent intent2=new Intent(MapActivity.this,NewMapActivity.class);
-                startActivity(intent2);
+                refresh();
+//                Toast.makeText(MapActivity.this,"b1要执行的动作",Toast.LENGTH_LONG).show();
+//                Intent intent2=new Intent(MapActivity.this,NewMapActivity.class);
+//                startActivity(intent2);
             }
         });
 
@@ -253,13 +234,16 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
                 DemoDetails demo = new DemoDetails(R.string.route_drive, R.string.blank, DriveRouteActivity.class);
                 if (demo.activityClass != null) {
                     Log.i("MY","demo!=null");
-                    startActivity(new Intent(MapActivity.this,
-                            demo.activityClass));
+                    List<Bin> list = getBinList();
+                    Intent intent = new Intent(MapActivity.this,demo.activityClass);
+                    //intent.putExtra("rubbishInfo", (Serializable) list);
+                    startActivity(intent);
                 }
             }
         });
 
         init();
+
         /*new Thread(new Runnable() {
             @Override
             public void run() {
@@ -356,6 +340,20 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
         super.onDestroy();
         mapView.onDestroy();
         mLocationClient.onDestroy();//销毁定位客户端。
+    }
+
+    public void refresh() {
+        finish();
+        Cursor cursor = db.getReadableDatabase().query("rubbish1",null,null,null,null,null,null);
+        SQLiteDatabase dbCRUD = db.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("usage",70.9f);
+        //仔细update中提示的参数（String table,ContentValues,String whereClause,String[] whereArgs）
+        //第三滴四行指定具体更新那几行。注意第三个参数中的？是一个占位符，通过第四个参数为第三个参数中占位符指定相应的内容。
+        dbCRUD.update("rubbish1",values,"id=?",new String[]{"4"});
+        cursor.close();
+        Intent intent = new Intent(MapActivity.this, MapActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -456,10 +454,7 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
                 Log.d("getUsageresponse", responseText);
-
-
                 response.body().close();
             }
 
@@ -496,28 +491,28 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
     }
 
     public static String sHA1(Context context) {
-    try {
-        PackageInfo info = context.getPackageManager().getPackageInfo(
-                context.getPackageName(), PackageManager.GET_SIGNATURES);
-        byte[] cert = info.signatures[0].toByteArray();
-        MessageDigest md = MessageDigest.getInstance("SHA1");
-        byte[] publicKey = md.digest(cert);
-        StringBuffer hexString = new StringBuffer();
-        for (int i = 0; i < publicKey.length; i++) {
-            String appendString = Integer.toHexString(0xFF & publicKey[i]).toUpperCase(Locale.US);
-            if (appendString.length() == 1){
-                hexString.append("0");}
-            hexString.append(appendString);
-            hexString.append(":");
+        try {
+            PackageInfo info = context.getPackageManager().getPackageInfo(
+                    context.getPackageName(), PackageManager.GET_SIGNATURES);
+            byte[] cert = info.signatures[0].toByteArray();
+            MessageDigest md = MessageDigest.getInstance("SHA1");
+            byte[] publicKey = md.digest(cert);
+            StringBuffer hexString = new StringBuffer();
+            for (int i = 0; i < publicKey.length; i++) {
+                String appendString = Integer.toHexString(0xFF & publicKey[i]).toUpperCase(Locale.US);
+                if (appendString.length() == 1)
+                    hexString.append("0");
+                hexString.append(appendString);
+                hexString.append(":");
+            }
+            String result = hexString.toString();
+            return result.substring(0, result.length()-1);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
         }
-        String result = hexString.toString();
-        return result.substring(0, result.length()-1);
-    } catch (PackageManager.NameNotFoundException e) {
-        e.printStackTrace();
-    } catch (NoSuchAlgorithmException e) {
-        e.printStackTrace();
+        return null;
     }
-    return null;
-}
 
 }
