@@ -48,7 +48,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:gravity="center"
-            android:textSize="35dp" />
+            android:textSize="25dp" />
 
             <TextView
             android:layout_width="match_parent"
@@ -69,11 +69,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:gravity="center"
-                android:textSize="35dp" />
+                android:textSize="25dp" />
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="33dp"
                 android:gravity="center"
                 android:text="@string/distance"
                 android:textSize="17dp" />
@@ -90,7 +90,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:gravity="center"
-                android:textSize="35dp" />
+                android:textSize="25dp" />
 
             <TextView
                 android:layout_width="match_parent"

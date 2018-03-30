@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_DB_SQL = "CREATE TABLE rubbish1 (id INTEGER     PRIMARY KEY AUTOINCREMENT, longitude double, latitude double, usage float, distance double,time String);";
     public DatabaseHelper(Context context) {
-        super(context, "rubbish1", null, 1);
+        super(context, "rubbish1", null, 2);
     }
 
     @Override
@@ -25,7 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int arg1, int arg2) {
-        db.execSQL("DROP TABLE IF EXISTS rubbish");
+        db.execSQL("DROP TABLE IF EXISTS rubbish1");
         onCreate(db);
     }
 }
