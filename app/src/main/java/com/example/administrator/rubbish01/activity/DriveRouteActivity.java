@@ -54,7 +54,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 驾车出行路线规划 实现
+ * 路线规划 实现
  */
 public class DriveRouteActivity extends Activity implements OnMapClickListener,
 		OnMarkerClickListener, OnInfoWindowClickListener, InfoWindowAdapter, OnRouteSearchListener,AMap.OnMyLocationChangeListener {
@@ -63,8 +63,8 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 	private Context mContext;
 	private RouteSearch mRouteSearch;
 	private DriveRouteResult mDriveRouteResult;
-	private LatLonPoint mStartPoint = new LatLonPoint(31.2325,121.40194444444444);//起点，39.942295,116.335891
-
+	private LatLonPoint mStartPoint = new LatLonPoint(31.22848,121.406224);//起点，39.942295,116.335891
+	//private LatLonPoint mStartPoint;
 	private LatLonPoint mEndPoint = new LatLonPoint(31.2218700000,121.4030900000);//终点，39.995576,116.481288
 
 	private final int ROUTE_TYPE_DRIVE = 2;
@@ -88,7 +88,6 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 		//调用moveToFirst()将数据指针移动到第一行的位置。
 		if (cursor.moveToFirst()) {
 			do {
-				//然后通过Cursor的getColumnIndex()获取某一列中所对应的位置的索引
 				int id = cursor.getInt(cursor.getColumnIndex("id"));
 				double latitude = cursor.getDouble(cursor.getColumnIndex("latitude"));
 				double longitude = cursor.getDouble(cursor.getColumnIndex("longitude"));
@@ -148,23 +147,24 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 						AMap.OnMarkerClickListener markerClickListener = new AMap.OnMarkerClickListener() {
 							@Override
 							public boolean onMarkerClick(Marker marker) {
-								Intent intent = null;
-								intent=new Intent(DriveRouteActivity.this,BinDetailActivity.class );
-								startActivity(intent);
-								return true;
+                                double binLat = marker.getPosition().latitude;
+                                Intent intent=new Intent(DriveRouteActivity.this,BinDetailActivity.class );
+                                intent.putExtra("latitude",String.valueOf(binLat));
+                                startActivity(intent);
+                                return true;
 							}
 						};
 						aMap.setOnMarkerClickListener(markerClickListener);
 					}
 
 					aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, 15));
-					MarkerOptions markerOptions = new MarkerOptions();
-					markerOptions.position(current_location);
-					markerOptions.title("当前位置");
-					markerOptions.visible(true);
-					BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.location_maker));
-					markerOptions.icon(bitmapDescriptor);
-					mStartPoint = AMapUtil.convertToLatLonPoint(current_location);
+//					MarkerOptions markerOptions = new MarkerOptions();
+//					markerOptions.position(current_location);
+//					markerOptions.title("当前位置");
+//					markerOptions.visible(true);
+//					BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.color.transparent));
+//					markerOptions.icon(bitmapDescriptor);
+
 				} else {
 					//显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
 					Log.e("AmapError", "location Error, ErrCode:"
@@ -311,9 +311,13 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 			List<LatLonPoint> list = new ArrayList<LatLonPoint>();
 			List <Bin> binList = getBinList();
 			for(int i=0;i<binList.size()-1;i++){
-				LatLonPoint ll = new LatLonPoint(binList.get(i).getLatitude(),binList.get(i).getLongitude());
-				list.add(ll);
+			    float tmpUsage = binList.get(i).getUsage();
+			    if(tmpUsage > 70.0f) {
+                    LatLonPoint ll = new LatLonPoint(binList.get(i).getLatitude(), binList.get(i).getLongitude());
+                    list.add(ll);
+                }
 			}
+			System.out.println("秦妤欣是垃圾吗"+list.toString());
 			DriveRouteQuery query = new DriveRouteQuery(fromAndTo, mode, list,
 					null, "");// 第一个参数表示路径规划的起点和终点，第二个参数表示驾车模式，第三个参数表示途经点，第四个参数表示避让区域，第五个参数表示避让道路
 			mRouteSearch.calculateDriveRouteAsyn(query);// 异步路径规划驾车模式查询
@@ -340,6 +344,7 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 							mDriveRouteResult.getStartPos(),
 							mDriveRouteResult.getTargetPos(), null);
 					drivingRouteOverlay.setNodeIconVisibility(false);//设置节点marker是否显示
+
 					drivingRouteOverlay.setIsColorfulline(false);//是否用颜色展示交通拥堵情况，默认true
 					drivingRouteOverlay.removeFromMap();
 					drivingRouteOverlay.addToMap();
@@ -422,6 +427,14 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 		super.onResume();
 		mapView.onResume();
 	}
+
+	@Override
+    protected void onRestart(){
+	    super.onRestart();
+	    mapView.onResume();
+        searchRouteResult(ROUTE_TYPE_DRIVE, RouteSearch.DrivingDefault);
+        System.out.println("this is onRestart");
+    }
 
 	/**
 	 * 方法必须重写

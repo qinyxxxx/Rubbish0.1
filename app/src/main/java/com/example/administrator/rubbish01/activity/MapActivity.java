@@ -149,7 +149,7 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
                     amapLocation.getAoiName();//获取当前定位点的AOI信息
                     lat = amapLocation.getLatitude();
                     lon = amapLocation.getLongitude();
-                    LatLng current_location = new LatLng(lat,lon);
+                     LatLng current_location = new LatLng(lat,lon);
                     Log.v("pcw", "lat : " + lat + " lon : " + lon);
                     Log.v("pcw", "Country : " + amapLocation.getCountry() + " province : " + amapLocation.getProvince() + " City : " + amapLocation.getCity() + " District : " + amapLocation.getDistrict());
 
@@ -171,9 +171,9 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
                         AMap.OnMarkerClickListener markerClickListener = new AMap.OnMarkerClickListener() {
                             @Override
                             public boolean onMarkerClick(Marker marker) {
-                                double lat=marker.getPosition().latitude;
+                                double binLat = marker.getPosition().latitude;
                                 Intent intent=new Intent(MapActivity.this,BinDetailActivity.class );
-                                intent.putExtra("data",String.valueOf(lat)) ;
+                                intent.putExtra("latitude",String.valueOf(binLat));
                                 startActivity(intent);
                                 return true;
                             }
@@ -237,6 +237,9 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
                     List<Bin> list = getBinList();
                     Intent intent = new Intent(MapActivity.this,demo.activityClass);
                     //intent.putExtra("rubbishInfo", (Serializable) list);
+//                    intent.putExtra("current_lat",current_location.latitude);
+//                    intent.putExtra("current_lon",current_location.longitude);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                 }
             }
@@ -347,10 +350,10 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
         Cursor cursor = db.getReadableDatabase().query("rubbish1",null,null,null,null,null,null);
         SQLiteDatabase dbCRUD = db.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put("usage",70.9f);
-        //仔细update中提示的参数（String table,ContentValues,String whereClause,String[] whereArgs）
-        //第三滴四行指定具体更新那几行。注意第三个参数中的？是一个占位符，通过第四个参数为第三个参数中占位符指定相应的内容。
-        dbCRUD.update("rubbish1",values,"id=?",new String[]{"4"});
+
+        values.put("usage",30.0f);
+        //update中提示的参数(String table,ContentValues,String whereClause,String[] whereArgs)
+        dbCRUD.update("rubbish1",values,"id=?",new String[]{"2"});
         cursor.close();
         Intent intent = new Intent(MapActivity.this, MapActivity.class);
         startActivity(intent);

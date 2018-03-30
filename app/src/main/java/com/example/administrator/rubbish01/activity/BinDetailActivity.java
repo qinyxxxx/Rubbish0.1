@@ -3,7 +3,6 @@ package com.example.administrator.rubbish01.activity;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,15 +14,12 @@ public class BinDetailActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_demo4);
-        String lat=getIntent().getStringExtra("data");
-        Log.d("和客sjdjn款",String.valueOf(lat));
+        setContentView(R.layout.activity_bindetail);
+        String lat=getIntent().getStringExtra("latitude");
         DatabaseHelper db = new DatabaseHelper(this);
         Cursor cursor = db.getReadableDatabase().rawQuery("select * from rubbish1 where latitude=?",new String[]{lat});
-        //调用moveToFirst()将数据指针移动到第一行的位置。
         if (cursor.moveToFirst()) {
             do {
-                //然后通过Cursor的getColumnIndex()获取某一列中所对应的位置的索引
                 int id = cursor.getInt(0);
                 double distance = cursor.getDouble(4);
                 float tmp = cursor.getFloat(3);
@@ -32,8 +28,8 @@ public class BinDetailActivity extends AppCompatActivity {
                 TextView distance1 = findViewById(R.id.RBdistance);
                 TextView time1= findViewById(R.id.RBtime);
                 id1.setText(String.format(String.valueOf(id)));
-                distance1.setText(String.format(String.valueOf(distance)+"m"));
-                time1.setText(String.format(time+"分钟"));
+                distance1.setText(String.format(String.valueOf(distance)));
+                time1.setText(String.format(time));
                 setRBstatus(tmp);
             }while(cursor.moveToNext());
         }
