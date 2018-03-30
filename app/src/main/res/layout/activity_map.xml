@@ -19,7 +19,9 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
-                    android:clickable="true"></com.amap.api.maps.MapView>
+                    android:clickable="true">
+
+                </com.amap.api.maps.MapView>
 
                 <TextView
                     android:id="@+id/location_errInfo_text"
@@ -48,15 +50,6 @@
                     android:background="@drawable/refresh"
                     android:id = "@+id/fresh"/>
 
-                <!--<Button-->
-                    <!--android:id="@+id/qyx"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_marginBottom="0dp"-->
-                    <!--android:layout_marginTop="450dp"-->
-                    <!--android:text="qyx's test" />-->
-                <!--&lt;!&ndash;调试！&ndash;&gt;-->
-
         </LinearLayout>
 
         <LinearLayout
@@ -67,11 +60,13 @@
                 <Button
                     android:id="@+id/route_button"
                     android:background="@drawable/button"
+                    android:layout_marginBottom="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:text="垃圾垃圾垃圾" />
+                    android:text="@string/clean_route"
+                    android:textColor="@color/white"/>
 
         </LinearLayout>
 

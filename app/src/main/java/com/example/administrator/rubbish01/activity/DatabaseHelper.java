@@ -1,6 +1,5 @@
 package com.example.administrator.rubbish01.activity;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -17,12 +16,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
         db.execSQL(CREATE_DB_SQL);
-        db.execSQL("insert into rubbish1(id,longitude,latitude,usage,distance,time) values(1,121.40586,31.2297,95.67,345.5,'2018/3/23')");//图书馆
-        db.execSQL("insert into rubbish1(id,longitude,latitude,usage,distance,time) values(2,121.40496,31.22555,77.25,478.2,'2018/3/19')");//物理楼
-        db.execSQL("insert into rubbish1(id,longitude,latitude,usage,distance,time) values(3,121.40993,31.22815,25.57,564.1,'2018/3/21')");//正门
-        db.execSQL("insert into rubbish1(id,longitude,latitude,usage,distance,time) values(4,121.40309,31.22187,50.80,389,'2018/2/26')");//设计学院
+        db.execSQL("insert into rubbish1(id,longitude,latitude,usage,distance,time) values(1,121.40586,31.2297,95.67,345.5,'5.76')");//图书馆
+        db.execSQL("insert into rubbish1(id,longitude,latitude,usage,distance,time) values(2,121.40496,31.22555,77.25,478.2,'7.97')");//物理楼
+        db.execSQL("insert into rubbish1(id,longitude,latitude,usage,distance,time) values(3,121.40993,31.22815,25.57,564.1,'9.37')");//正门
+        db.execSQL("insert into rubbish1(id,longitude,latitude,usage,distance,time) values(4,121.40309,31.22187,50.80,389,'6.48')");//设计学院
     }
 
     @Override

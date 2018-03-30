@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
@@ -42,6 +43,7 @@ import com.amap.api.services.route.RouteSearch.DriveRouteQuery;
 import com.amap.api.services.route.RouteSearch.OnRouteSearchListener;
 import com.amap.api.services.route.WalkRouteResult;
 import com.example.administrator.rubbish01.R;
+import com.example.administrator.rubbish01.bean.Bin;
 import com.example.administrator.rubbish01.overlay.DrivingRouteOverlay;
 import com.example.administrator.rubbish01.util.AMapUtil;
 import com.example.administrator.rubbish01.util.ToastUtil;
@@ -55,16 +57,16 @@ import java.util.List;
  * 驾车出行路线规划 实现
  */
 public class DriveRouteActivity extends Activity implements OnMapClickListener,
-        OnMarkerClickListener, OnInfoWindowClickListener, InfoWindowAdapter, OnRouteSearchListener,AMap.OnMyLocationChangeListener {
+		OnMarkerClickListener, OnInfoWindowClickListener, InfoWindowAdapter, OnRouteSearchListener,AMap.OnMyLocationChangeListener {
 	private AMap aMap;
 	private MapView mapView;
 	private Context mContext;
 	private RouteSearch mRouteSearch;
 	private DriveRouteResult mDriveRouteResult;
 	private LatLonPoint mStartPoint = new LatLonPoint(31.2325,121.40194444444444);//起点，39.942295,116.335891
-	//private LatLonPoint mStartPoint = null;
+
 	private LatLonPoint mEndPoint = new LatLonPoint(31.2218700000,121.4030900000);//终点，39.995576,116.481288
-	
+
 	private final int ROUTE_TYPE_DRIVE = 2;
 
 	private MyLocationStyle myLocationStyle;
@@ -76,9 +78,28 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 	private RelativeLayout mBottomLayout, mHeadLayout;
 	private TextView mRotueTimeDes, mRouteDetailDes;
 	private ProgressDialog progDialog = null;// 搜索时进度条
-
+	private DatabaseHelper db=null;
 	private double lat;
 	private double lon;
+
+	public List<Bin> getBinList(){
+		List<Bin> list = new ArrayList<Bin>();
+		Cursor cursor = db.getReadableDatabase().query("rubbish1",null,null,null,null,null,null);
+		//调用moveToFirst()将数据指针移动到第一行的位置。
+		if (cursor.moveToFirst()) {
+			do {
+				//然后通过Cursor的getColumnIndex()获取某一列中所对应的位置的索引
+				int id = cursor.getInt(cursor.getColumnIndex("id"));
+				double latitude = cursor.getDouble(cursor.getColumnIndex("latitude"));
+				double longitude = cursor.getDouble(cursor.getColumnIndex("longitude"));
+				float usage = cursor.getFloat(cursor.getColumnIndex("usage"));
+				list.add(new Bin(id,usage,longitude,latitude));
+//                System.out.println("垃圾桶: "+id+" usage:" + usage +" latlot:"+ new LatLng(latitude,longitude));
+			} while (cursor.moveToNext());
+		}
+		cursor.close();
+		return list;
+	}
 
 	public AMapLocationListener mLocationListener = new AMapLocationListener() {
 		@Override
@@ -108,41 +129,26 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 					LatLng current_location = new LatLng(lat,lon);
 					Log.v("pcw", "lat : " + lat + " lon : " + lon);
 					Log.v("pcw", "Country : " + amapLocation.getCountry() + " province : " + amapLocation.getProvince() + " City : " + amapLocation.getCity() + " District : " + amapLocation.getDistrict());
-//					mStartPoint.setLongitude(lon);
-//					mStartPoint.setLatitude(lat);
 
-					final LatLng latlon_one = new LatLng(31.2297000000,121.4058700000);// 图书馆
-					final LatLng latlon_two = new LatLng(31.2255500000,121.4049600000); //物理楼
-					final LatLng latlon_three = new LatLng(31.2281570000,121.4099300000); //正门
-					final LatLng latlon_four = new LatLng(31.2218700000,121.4030900000); //设计学院
+					List<Bin> list = getBinList();
 
-					// 设置当前地图显示为当前位置
-					List<LatLng> list = new ArrayList<LatLng>();
-					list.add(latlon_one);
-					list.add(latlon_two);
-					list.add(latlon_three);
-					list.add(latlon_four);
 					for(int i=0;i<list.size();i++) {
 						MarkerOptions marker =new MarkerOptions();
-						marker.position(list.get(i));
+						marker.position(new LatLng(list.get(i).getLatitude(),list.get(i).getLongitude()));
 						marker.visible(true);
-						float tmp_full_percent = 50.5f;
-						BitmapDescriptor bitmapDescriptor1 = null;
-						if(tmp_full_percent>0.0f && tmp_full_percent<70.0f)
-							bitmapDescriptor1 = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.empty_icon));
-						else
-							bitmapDescriptor1 = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.full_icon));
-
-						marker.icon(bitmapDescriptor1);
+						BitmapDescriptor bitmapDescriptor = null;
+						float usage = list.get(i).getUsage();
+						if(usage>0.0f && usage<70.0f){
+							bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.empty_icon));}
+						else{
+							bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.full_icon));}
+						marker.icon(bitmapDescriptor);
 						marker.title(String.valueOf(i));
 						aMap.addMarker(marker);
 						AMap.OnMarkerClickListener markerClickListener = new AMap.OnMarkerClickListener() {
 							@Override
 							public boolean onMarkerClick(Marker marker) {
 								Intent intent = null;
-//                                if((marker.getPosition().equals(latlon_one))){
-//                                    intent=new Intent(MapActivity.this,Demo1Activity.class );}
-//                                else{
 								intent=new Intent(DriveRouteActivity.this,Demo4Activity.class );
 								startActivity(intent);
 								return true;
@@ -172,7 +178,7 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 		setContentView(R.layout.route_activity);
-		
+		db=new DatabaseHelper(this);
 		mContext = this.getApplicationContext();
 		mapView = (MapView) findViewById(R.id.route_map);
 		mapView.onCreate(bundle);// 此方法必须重写
@@ -180,7 +186,6 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 		mLocationClient = new AMapLocationClient(getApplicationContext());
 		//设置定位回调监听
 		mLocationClient.setLocationListener(mLocationListener);
-
 		init();
 		setfromandtoMarker();
 		searchRouteResult(ROUTE_TYPE_DRIVE, RouteSearch.DrivingDefault);
@@ -188,11 +193,11 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 
 	private void setfromandtoMarker() {
 		aMap.addMarker(new MarkerOptions()
-		.position(AMapUtil.convertToLatLng(mStartPoint))
-		.icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
+				.position(AMapUtil.convertToLatLng(mStartPoint))
+				.icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
 		aMap.addMarker(new MarkerOptions()
-		.position(AMapUtil.convertToLatLng(mEndPoint))
-		.icon(BitmapDescriptorFactory.fromResource(R.drawable.end)));
+				.position(AMapUtil.convertToLatLng(mEndPoint))
+				.icon(BitmapDescriptorFactory.fromResource(R.drawable.end)));
 	}
 
 	/**
@@ -200,7 +205,7 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 	 */
 	private void init() {
 		if (aMap == null) {
-			aMap = mapView.getMap();	
+			aMap = mapView.getMap();
 		}
 		registerListener();
 		mRouteSearch = new RouteSearch(this);
@@ -273,7 +278,7 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 	@Override
 	public void onInfoWindowClick(Marker arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -285,9 +290,9 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 	@Override
 	public void onMapClick(LatLng arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	/**
 	 * 开始搜索路径规划方案
 	 */
@@ -304,9 +309,11 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 				mStartPoint, mEndPoint);
 		if (routeType == ROUTE_TYPE_DRIVE) {// 路径规划
 			List<LatLonPoint> list = new ArrayList<LatLonPoint>();
-			list.add(new LatLonPoint(31.2297000000,121.4058700000));
-			list.add(new LatLonPoint(31.2255500000,121.4049600000));
-			list.add(new LatLonPoint(31.2281570000,121.4099300000));
+			List <Bin> binList = getBinList();
+			for(int i=0;i<binList.size()-1;i++){
+				LatLonPoint ll = new LatLonPoint(binList.get(i).getLatitude(),binList.get(i).getLongitude());
+				list.add(ll);
+			}
 			DriveRouteQuery query = new DriveRouteQuery(fromAndTo, mode, list,
 					null, "");// 第一个参数表示路径规划的起点和终点，第二个参数表示驾车模式，第三个参数表示途经点，第四个参数表示避让区域，第五个参数表示避让道路
 			mRouteSearch.calculateDriveRouteAsyn(query);// 异步路径规划驾车模式查询
@@ -315,7 +322,7 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 
 	@Override
 	public void onBusRouteSearched(BusRouteResult result, int errorCode) {
-		
+
 	}
 
 	@Override
@@ -356,7 +363,7 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 							startActivity(intent);
 						}
 					});
-					
+
 				} else if (result != null && result.getPaths() == null) {
 					ToastUtil.show(mContext, R.string.no_result);
 				}
@@ -367,15 +374,15 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 		} else {
 			ToastUtil.showerror(this.getApplicationContext(), errorCode);
 		}
-		
-		
+
+
 	}
 
 	@Override
 	public void onWalkRouteSearched(WalkRouteResult result, int errorCode) {
-		
+
 	}
-	
+
 
 	/**
 	 * 显示进度框
@@ -383,12 +390,12 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 	private void showProgressDialog() {
 		if (progDialog == null)
 			progDialog = new ProgressDialog(this);
-		    progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		    progDialog.setIndeterminate(false);
-		    progDialog.setCancelable(true);
-		    progDialog.setMessage("正在搜索");
-		    progDialog.show();
-	    }
+		progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		progDialog.setIndeterminate(false);
+		progDialog.setCancelable(true);
+		progDialog.setMessage("正在搜索");
+		progDialog.show();
+	}
 
 	/**
 	 * 隐藏进度框

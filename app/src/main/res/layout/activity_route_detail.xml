@@ -9,7 +9,7 @@
         android:id="@+id/route_title"
         android:layout_width="match_parent"
         android:layout_height="44dp"
-        android:background="@drawable/title_background">
+        android:background="@color/lightGreen">
         <LinearLayout
             android:id="@+id/title_back"
             android:layout_width="70dp"
@@ -43,9 +43,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:textColor="@color/black"
-                android:textSize="@dimen/title_text_size"
-                android:textStyle="bold" />
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:textStyle="normal" />
         </LinearLayout>
         <LinearLayout
             android:id="@+id/title_map"
@@ -80,7 +80,7 @@
         android:orientation="vertical">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="35dp"
+        android:layout_height="40dp"
         android:gravity="center_vertical"
         android:padding="5dp"
         android:background="@drawable/bg_bottom_bar"
@@ -88,7 +88,7 @@
         <TextView
             android:id="@+id/firstline"
             android:layout_width="wrap_content"
-            android:layout_height="35dp"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="12dp"
             android:singleLine="true"
             android:textColor="#333333"

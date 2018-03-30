@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://C:\Users\Administrator\learngit\Rubbish0.1\Rubbish.iml" filepath="C:\Users\Administrator\learngit\Rubbish0.1\Rubbish.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Rubbish0.1.iml" filepath="$PROJECT_DIR$/Rubbish0.1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Rubbish.iml" filepath="$PROJECT_DIR$/Rubbish.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
