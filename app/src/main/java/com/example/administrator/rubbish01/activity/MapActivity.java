@@ -182,7 +182,7 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
                     }
 
                     // 设置当前地图显示为当前位置
-                    aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, 15));
+                    aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, 15.5f));
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(current_location);
                     markerOptions.title("当前位置");
@@ -350,8 +350,7 @@ public class MapActivity extends Activity implements AMap.OnMyLocationChangeList
         Cursor cursor = db.getReadableDatabase().query("rubbish1",null,null,null,null,null,null);
         SQLiteDatabase dbCRUD = db.getWritableDatabase();
         ContentValues values = new ContentValues();
-
-        values.put("usage",30.0f);
+        values.put("usage",80.0f);
         //update中提示的参数(String table,ContentValues,String whereClause,String[] whereArgs)
         dbCRUD.update("rubbish1",values,"id=?",new String[]{"2"});
         cursor.close();

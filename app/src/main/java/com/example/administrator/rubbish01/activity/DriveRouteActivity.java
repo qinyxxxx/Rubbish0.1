@@ -157,7 +157,7 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 						aMap.setOnMarkerClickListener(markerClickListener);
 					}
 
-					aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, 15));
+					aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, 15.5f));
 //					MarkerOptions markerOptions = new MarkerOptions();
 //					markerOptions.position(current_location);
 //					markerOptions.title("当前位置");
@@ -177,6 +177,7 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 	@Override
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
+        System.out.println("this is onCreate()");
 		setContentView(R.layout.route_activity);
 		db=new DatabaseHelper(this);
 		mContext = this.getApplicationContext();
@@ -310,14 +311,16 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 		if (routeType == ROUTE_TYPE_DRIVE) {// 路径规划
 			List<LatLonPoint> list = new ArrayList<LatLonPoint>();
 			List <Bin> binList = getBinList();
+			System.out.println("binList长度："+binList.size());
 			for(int i=0;i<binList.size()-1;i++){
+			    System.out.println("应该是1、2、3垃圾桶:" + binList.get(i).toString());
 			    float tmpUsage = binList.get(i).getUsage();
-			    if(tmpUsage > 70.0f) {
+			    if(tmpUsage >= 70.0f) {
                     LatLonPoint ll = new LatLonPoint(binList.get(i).getLatitude(), binList.get(i).getLongitude());
                     list.add(ll);
                 }
 			}
-			System.out.println("秦妤欣是垃圾吗"+list.toString());
+			System.out.println("红色的垃圾桶：应该是2个"+list.toString());
 			DriveRouteQuery query = new DriveRouteQuery(fromAndTo, mode, list,
 					null, "");// 第一个参数表示路径规划的起点和终点，第二个参数表示驾车模式，第三个参数表示途经点，第四个参数表示避让区域，第五个参数表示避让道路
 			mRouteSearch.calculateDriveRouteAsyn(query);// 异步路径规划驾车模式查询
@@ -417,6 +420,7 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 	protected void onStop() {
 		super.onStop();
 		mLocationClient.stopLocation();//停止定位
+        System.out.println("this is onStop()");
 	}
 
 	/**
@@ -426,14 +430,21 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 	protected void onResume() {
 		super.onResume();
 		mapView.onResume();
+        System.out.println("this is onResume()");
 	}
+
+	@Override
+    protected void onStart(){
+        super.onStart();
+        //mapView.onResume();
+        System.out.println("this is onStart()");
+    }
 
 	@Override
     protected void onRestart(){
 	    super.onRestart();
-	    mapView.onResume();
-        searchRouteResult(ROUTE_TYPE_DRIVE, RouteSearch.DrivingDefault);
-        System.out.println("this is onRestart");
+	    //mapView.onResume();
+        System.out.println("this is onRestart()");
     }
 
 	/**
@@ -443,6 +454,7 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 	protected void onPause() {
 		super.onPause();
 		mapView.onPause();
+        System.out.println("this is onPause()");
 	}
 
 	/**
@@ -462,6 +474,7 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 		super.onDestroy();
 		mapView.onDestroy();
 		mLocationClient.onDestroy();
+        System.out.println("this is onDestroy()");
 	}
 
 
